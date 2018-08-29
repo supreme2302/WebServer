@@ -16,7 +16,7 @@ public class ResponseHandler implements Runnable {
     private OutputStream os;
     private BufferedOutputStream bos;
     //todo: Hardcode
-    final String document_root = "/home/supreme/Projects/IdeaProjects/simpleproject";
+    final String document_root = "/home/supreme/Projects/IdeaProjects/WebServer";
 //    final String document_root = "/var/www/html";
 
 
@@ -204,5 +204,4 @@ public class ResponseHandler implements Runnable {
 //    }
 }
 
-//todo: обработка ошибок
 
