@@ -2,9 +2,7 @@ package ThreadPool;
 
 import AwesomeQueue.AwesomeQueue;
 
-import java.util.concurrent.Executor;
-
-public class ThreadPool implements Executor {
+public class ThreadPool {
     private final AwesomeQueue<Runnable> workQueue = new AwesomeQueue<Runnable>();
     private volatile boolean isRunning = true;
 
@@ -14,7 +12,6 @@ public class ThreadPool implements Executor {
         }
     }
 
-    @Override
     public void execute(Runnable command) {
         synchronized (workQueue) {
             if (isRunning) {
