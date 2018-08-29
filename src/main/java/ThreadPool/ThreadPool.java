@@ -20,14 +20,14 @@ public class ThreadPool implements Executor {
             if (isRunning) {
 //                System.out.println("execute,  " + Thread.currentThread().getName());
                 workQueue.enqueue(command);
-//                this.notify();
+                workQueue.notify();
             }
         }
     }
 
-    public void shutdown() {
-        isRunning = false;
-    }
+//    public void shutdown() {
+//        isRunning = false;
+//    }
 
     private final class TaskWorker implements Runnable {
 
@@ -37,12 +37,12 @@ public class ThreadPool implements Executor {
             while (isRunning) {
                 Runnable nextTask = null;
                 synchronized (workQueue) {
-//                    while (!workQueue.hasItems()) {
-//                        try {
-//                            this.wait();
-//                        } catch (InterruptedException e) {e.printStackTrace();}
-//
-//                    }
+                    while (!workQueue.hasItems()) {
+                        try {
+                            workQueue.wait();
+                        } catch (InterruptedException e) {e.printStackTrace();}
+
+                    }
                     nextTask = workQueue.dequeue();
                 }
                 if (nextTask != null) {

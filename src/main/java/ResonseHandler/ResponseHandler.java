@@ -16,8 +16,8 @@ public class ResponseHandler implements Runnable {
     private OutputStream os;
     private BufferedOutputStream bos;
     //todo: Hardcode
-//    final String document_root = "/home/supreme/Projects/IdeaProjects/simpleproject";
-    final String document_root = "/var/www/html";
+    final String document_root = "/home/supreme/Projects/IdeaProjects/simpleproject";
+//    final String document_root = "/var/www/html";
 
 
    public ResponseHandler(Socket incoming) {
@@ -39,10 +39,11 @@ public class ResponseHandler implements Runnable {
         types.put("txt", "text/txt");
         types.put("html", "text/html");
         types.put("css", "text/css");
-        types.put("jpeg", "image/jpg");
+        types.put("jpeg", "image/jpeg");
+        types.put("jpg", "image/jpeg");
         types.put("png", "image/png");
         types.put("gif", "image/gif");
-        types.put("js", "'application/javascript");
+        types.put("js", "application/javascript");
         types.put("swf", "application/x-shockwave-flash");
         return types.get(ext);
     }
@@ -87,6 +88,14 @@ public class ResponseHandler implements Runnable {
             os.write(Responses.writeResponse(file, content_type).getBytes());
             os.flush();
             sendFile(file);
+        } catch (IOException ignored) {}
+    }
+    private void headResponse(File file) {
+        String ext = getFileExtension(file);
+        String content_type  = content_type(ext);
+        try {
+            os.write(Responses.writeResponse(file, content_type).getBytes());
+            os.flush();
         } catch (IOException ignored) {}
     }
     private void rejectResponseForbidden() {
@@ -155,7 +164,12 @@ public class ResponseHandler implements Runnable {
         String fullPath = fullPath(path);
         File file = getFile(fullPath);
         if (file != null) {
-            getResponse(file);
+            if (method.equals("HEAD")) {
+                headResponse(file);
+            } else {
+                getResponse(file);
+            }
+
         } else {
             if (!fullPath.contains("index.html")) {
                 rejectResponseNotFound();
@@ -185,9 +199,9 @@ public class ResponseHandler implements Runnable {
         }
     }
 
-    public boolean isOpen() {
-        return isOpen;
-    }
+//    public boolean isOpen() {
+//        return isOpen;
+//    }
 }
 
 //todo: обработка ошибок
