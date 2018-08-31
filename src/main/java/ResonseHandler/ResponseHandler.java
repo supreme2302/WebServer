@@ -16,8 +16,8 @@ public class ResponseHandler implements Runnable {
     private OutputStream os;
     private BufferedOutputStream bos;
     //todo: Hardcode
-    final String document_root = "/home/supreme/Projects/IdeaProjects/WebServer";
-//    final String document_root = "/var/www/html";
+//    final String document_root = "/home/supreme/Projects/IdeaProjects/WebServer";
+    final String document_root = "/var/www/html";
 
 
    public ResponseHandler(Socket incoming) {
