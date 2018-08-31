@@ -11,7 +11,7 @@ import java.net.Socket;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        try (var serverSocket = new ServerSocket(8080)) {
+        try (var serverSocket = new ServerSocket(80)) {
             var threadPool = new ThreadPool(16);
             while (true) {
                 var incoming = serverSocket.accept();
