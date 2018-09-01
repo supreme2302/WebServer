@@ -1,12 +1,16 @@
 package ResonseHandler;
 
 import Responses.Responses;
-
 import java.io.*;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+
+import static Tools.FileTools.getFile;
+import static Tools.FileTools.getFileExtension;
+import static Tools.FileTools.sendFile;
+
 
 public class ResponseHandler implements Runnable {
     private Socket incoming;
@@ -16,8 +20,8 @@ public class ResponseHandler implements Runnable {
     private OutputStream os;
     private BufferedOutputStream bos;
     //todo: Hardcode
-//    final String document_root = "/home/supreme/Projects/IdeaProjects/WebServer";
-    final String document_root = "/var/www/html";
+    private final String document_root = "/home/supreme/Projects/IdeaProjects/WebServer";
+//    final String document_root = "/var/www/html";
 
 
    public ResponseHandler(Socket incoming) {
@@ -35,7 +39,7 @@ public class ResponseHandler implements Runnable {
     }
 
     private String content_type(String ext) {
-        HashMap<String, String> types = new HashMap<>();
+        var types = new HashMap<String, String>();
         types.put("txt", "text/txt");
         types.put("html", "text/html");
         types.put("css", "text/css");
@@ -48,51 +52,21 @@ public class ResponseHandler implements Runnable {
         return types.get(ext);
     }
 
-    private String getFileExtension(File file) {
-//        System.out.println("getFileExtension");
-        String name = file.getName();
-        int index = name.lastIndexOf('.');
-        return index > 0 ? name.substring(index + 1) : null;
-    }
-    private String getFileExtension(String name) {
-//        System.out.println("getFileExtension");
-        int index = name.lastIndexOf('.');
-        return index > 0 ? name.substring(index + 1) : null;
-    }
 
-    private File getFile(String path) {
-//        System.out.println("getFile");
-        File file = new File(path);
-        System.out.println(path);
-        return file.exists() ? file : null;
-    }
-
-    private void sendFile(File file) throws IOException  {
-//        System.out.println("sendFile");
-        try(final FileInputStream fileInputStream = new FileInputStream(file)) {
-//            final byte[] buffer = new byte[(int)file.length()];
-            final byte[] buffer = new byte[fileInputStream.available()];
-            int amountOfBytesRead = 0;
-            while ((amountOfBytesRead = fileInputStream.read(buffer)) != -1) {
-                bos.write(buffer, 0, amountOfBytesRead);
-                bos.flush();
-            }
-        } catch (FileNotFoundException ignored) {}
-    }
 
     private void getResponse(File file)  {
 //        System.out.println("getResponse");
-        String ext = getFileExtension(file);
-        String content_type  = content_type(ext);
+        var ext = getFileExtension(file);
+        var content_type  = content_type(ext);
         try {
             os.write(Responses.writeResponse(file, content_type).getBytes());
             os.flush();
-            sendFile(file);
+            sendFile(file, bos);
         } catch (IOException ignored) {}
     }
     private void headResponse(File file) {
-        String ext = getFileExtension(file);
-        String content_type  = content_type(ext);
+        var ext = getFileExtension(file);
+        var content_type  = content_type(ext);
         try {
             os.write(Responses.writeResponse(file, content_type).getBytes());
             os.flush();
@@ -122,8 +96,8 @@ public class ResponseHandler implements Runnable {
 
     private String[] readInputHeaders() throws IOException {
 //        System.out.println("readInputHeaders");
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sum = new StringBuilder();
+        var br = new BufferedReader(new InputStreamReader(is));
+        var sum = new StringBuilder();
         while(true) {
             String s = br.readLine();
             if(s == null || s.trim().length() == 0) {
@@ -150,19 +124,19 @@ public class ResponseHandler implements Runnable {
             rejectResponseForbidden();
             return;
         }
-        String path = URLDecoder.decode(rowPath, StandardCharsets.UTF_8).split("\\?")[0];
-        int indexOfSlash = path.lastIndexOf('/');
+        var path = URLDecoder.decode(rowPath, StandardCharsets.UTF_8).split("\\?")[0];
 
+        var indexOfSlash = path.lastIndexOf('/');
         if (indexOfSlash == path.length() - 1) {
-            String pathWithoutSlash = path.substring(0, indexOfSlash);
-            String tempExt = getFileExtension(pathWithoutSlash);
+            var pathWithoutSlash = path.substring(0, indexOfSlash);
+            var tempExt = getFileExtension(pathWithoutSlash);
             if (tempExt != null) {
                 rejectResponseNotFound();
                 return;
             }
         }
-        String fullPath = fullPath(path);
-        File file = getFile(fullPath);
+        var fullPath = fullPath(path);
+        var file = getFile(fullPath);
         if (file != null) {
             if (method.equals("HEAD")) {
                 headResponse(file);
@@ -178,7 +152,6 @@ public class ResponseHandler implements Runnable {
             }
 
         }
-
     }
     @Override
     public void run() {
