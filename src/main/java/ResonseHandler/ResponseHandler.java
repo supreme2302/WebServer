@@ -1,6 +1,8 @@
 package ResonseHandler;
 
 import Responses.Responses;
+import Tools.ParseConf;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.URLDecoder;
@@ -19,13 +21,12 @@ public class ResponseHandler implements Runnable {
     private InputStream is;
     private OutputStream os;
     private BufferedOutputStream bos;
-    //todo: Hardcode
-    private final String document_root = "/home/supreme/Projects/IdeaProjects/WebServer";
-//    final String document_root = "/var/www/html";
-
-
-   public ResponseHandler(Socket incoming) {
+    private String defaultRoot = "/var/www/html";
+    private String document_root;
+    public ResponseHandler(Socket incoming, String document_root) {
         this.incoming = incoming;
+        this.document_root = document_root == null ?
+                defaultRoot : document_root;
         try {
             this.is = incoming.getInputStream();
             this.os = incoming.getOutputStream();
