@@ -4,20 +4,21 @@ import Tools.ParseConf;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.Objects;
 
 
 public class Main {
     public static void main(String[] args) throws IOException {
         String[] parseConf = ParseConf.readConf();
-        Integer defaultPort = 8080;
-        Integer port = ParseConf.getPort(parseConf[0]);
-        port = port == 0 ? defaultPort : port;
+        int defaultPort = 8080;
+        var port = ParseConf.getPort(Objects.requireNonNull(parseConf)[0]);
+        port = port == null ? defaultPort : port;
 
-        Integer defaultAmountOfThreads = 16;
-        Integer amountOfThreads = ParseConf.getAmountOfThreads(parseConf[1]);
-        amountOfThreads = amountOfThreads == 0 ? defaultAmountOfThreads : amountOfThreads;
+        int defaultAmountOfThreads = 16;
+        var amountOfThreads = ParseConf.getAmountOfThreads(parseConf[1]);
+        amountOfThreads = amountOfThreads == null ? defaultAmountOfThreads : amountOfThreads;
 
-        String document_root =  ParseConf.getStaticDir(parseConf[2]);
+        var document_root =  ParseConf.getStaticDir(parseConf[2]);
 
         try (var serverSocket = new ServerSocket(port)) {
             var threadPool = new ThreadPool(amountOfThreads);

@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Objects;
 
 public class ParseConf {
-    static String path = "httpd.conf";
+    private static String path = "httpd.conf";
     public static String[] readConf() throws IOException {
         File file = FileTools.getFile(path);
         if (file != null) {
