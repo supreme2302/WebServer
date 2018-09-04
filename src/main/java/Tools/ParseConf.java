@@ -2,6 +2,7 @@ package Tools;
 
 import java.io.*;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ParseConf {
     private static String path = "httpd.conf";

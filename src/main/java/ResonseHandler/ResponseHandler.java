@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static Tools.FileTools.getFile;
 import static Tools.FileTools.getFileExtension;
@@ -54,7 +56,7 @@ public class ResponseHandler implements Runnable {
     }
 
 
-
+    //todo:: consumer
     private void getResponse(File file)  {
 //        System.out.println("getResponse");
         var ext = getFileExtension(file);
@@ -65,6 +67,8 @@ public class ResponseHandler implements Runnable {
             sendFile(file, bos);
         } catch (IOException ignored) {}
     }
+
+    //todo:: consumer
     private void headResponse(File file) {
         var ext = getFileExtension(file);
         var content_type  = content_type(ext);
@@ -95,6 +99,14 @@ public class ResponseHandler implements Runnable {
         } catch (IOException ignored) {}
     }
 
+
+//    private Runnable rT = () -> {
+//        try {
+//            os.write(Responses.writeRejectResponse("405 Method Not Allowed").getBytes());
+//        } catch (IOException ignored) {}
+//    };
+
+    //todo::autoclosable
     private String[] readInputHeaders() throws IOException {
 //        System.out.println("readInputHeaders");
         var br = new BufferedReader(new InputStreamReader(is));
@@ -110,9 +122,10 @@ public class ResponseHandler implements Runnable {
         return sum.toString().split(" ");
     }
 
-    private void makeResponse(String[] req)  {
+    private Consumer<String[]> makeResponse = req -> {
         String method = req[0];
         if (!method.equals("GET") && !method.equals("HEAD")) {
+//            rT.run();
             rejectResponseMethodNotAllowed();
             return;
         }
@@ -153,12 +166,13 @@ public class ResponseHandler implements Runnable {
             }
 
         }
-    }
+    };
+
     @Override
     public void run() {
         try {
             String[] a = readInputHeaders();
-            makeResponse(a);
+            makeResponse.accept(a);
 
         }
         catch (IOException ignored) {}
