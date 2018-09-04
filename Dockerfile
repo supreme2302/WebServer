@@ -18,6 +18,6 @@ RUN mkdir -p /var/www/html
 WORKDIR $WORK/java
 RUN mvn package
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD java -jar target/WebServer-1.0-SNAPSHOT.jar
