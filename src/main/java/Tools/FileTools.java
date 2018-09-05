@@ -25,13 +25,14 @@ public class FileTools {
     public static void sendFile(File file, BufferedOutputStream bos) throws IOException {
 //        System.out.println("sendFile");
         try(final var fileInputStream = new FileInputStream(file)) {
-//            final byte[] buffer = new byte[(int)file.length()];
-            final byte[] buffer = new byte[fileInputStream.available()];
-            int amountOfBytesRead = 0;
-            while ((amountOfBytesRead = fileInputStream.read(buffer)) != -1) {
-                bos.write(buffer, 0, amountOfBytesRead);
-                bos.flush();
-            }
+            final var size = fileInputStream.available();
+            final byte[] buffer = new byte[size];
+            bos.write(
+                    buffer,
+                    0,
+                    fileInputStream.read(buffer, 0, size)
+            );
+            bos.flush();
         } catch (FileNotFoundException ignored) {}
     }
 }

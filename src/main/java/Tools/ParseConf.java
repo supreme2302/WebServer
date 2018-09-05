@@ -1,20 +1,27 @@
 package Tools;
 
 import java.io.*;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ParseConf {
     private static String path = "httpd.conf";
-    public static String[] readConf() throws IOException {
+    public static List<String> readConf() throws IOException {
         File file = FileTools.getFile(path);
         if (file != null) {
             try (var bufReader = new BufferedReader(new FileReader(file))) {
-                String[] lines = new String[3];
-                for (int i = 0; i < 3; ++i) {
-                    lines[i] = bufReader.readLine();
-                }
-                return lines;
+                Stream<String> stringStream = Arrays.stream(new String[3]);
+                return stringStream.map(line -> {
+                    try {
+                        line = bufReader.readLine();
+                        return line;
+                    } catch (IOException ignored) {}
+                    return null;
+
+                }).collect(Collectors.toList());
             }
             catch (FileNotFoundException ignored) {}
         }

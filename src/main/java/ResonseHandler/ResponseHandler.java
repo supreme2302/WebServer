@@ -55,10 +55,7 @@ public class ResponseHandler implements Runnable {
         return types.get(ext);
     }
 
-
-    //todo:: consumer
-    private void getResponse(File file)  {
-//        System.out.println("getResponse");
+    private Consumer<File> getResponse = file -> {
         var ext = getFileExtension(file);
         var content_type  = content_type(ext);
         try {
@@ -66,17 +63,18 @@ public class ResponseHandler implements Runnable {
             os.flush();
             sendFile(file, bos);
         } catch (IOException ignored) {}
-    }
+    };
 
-    //todo:: consumer
-    private void headResponse(File file) {
+    private Consumer<File> headResponse = file -> {
         var ext = getFileExtension(file);
         var content_type  = content_type(ext);
         try {
             os.write(Responses.writeResponse(file, content_type).getBytes());
             os.flush();
         } catch (IOException ignored) {}
-    }
+    };
+
+
     private void rejectResponseForbidden() {
 //        System.out.println("rejectResponseForbidden");
         try {
@@ -99,28 +97,24 @@ public class ResponseHandler implements Runnable {
         } catch (IOException ignored) {}
     }
 
-
-//    private Runnable rT = () -> {
-//        try {
-//            os.write(Responses.writeRejectResponse("405 Method Not Allowed").getBytes());
-//        } catch (IOException ignored) {}
-//    };
-
-    //todo::autoclosable
-    private String[] readInputHeaders() throws IOException {
-//        System.out.println("readInputHeaders");
-        var br = new BufferedReader(new InputStreamReader(is));
-        var sum = new StringBuilder();
-        while(true) {
-            String s = br.readLine();
-            if(s == null || s.trim().length() == 0) {
-                break;
+    private Supplier<String[]> readInputHeaders = () -> {
+        try {
+            var br = new BufferedReader(new InputStreamReader(is));
+            var sum = new StringBuilder();
+            while(true) {
+                String s = br.readLine();
+                if(s == null || s.trim().length() == 0) {
+                    break;
+                }
+                sum.append(s);
             }
-            sum.append(s);
-        }
-        System.out.println(sum.toString());
-        return sum.toString().split(" ");
-    }
+            System.out.println(sum.toString());
+            return sum.toString().split(" ");
+        } catch (IOException ignore) {}
+        return null;
+    };
+
+
 
     private Consumer<String[]> makeResponse = req -> {
         String method = req[0];
@@ -153,9 +147,9 @@ public class ResponseHandler implements Runnable {
         var file = getFile(fullPath);
         if (file != null) {
             if (method.equals("HEAD")) {
-                headResponse(file);
+                headResponse.accept(file);
             } else {
-                getResponse(file);
+                getResponse.accept(file);
             }
 
         } else {
@@ -171,11 +165,14 @@ public class ResponseHandler implements Runnable {
     @Override
     public void run() {
         try {
-            String[] a = readInputHeaders();
-            makeResponse.accept(a);
-
+            String[] a = readInputHeaders.get();
+            if (a != null) {
+                makeResponse.accept(a);
+            } else {
+                throw new NullPointerException("Method readInputHeaders returns null");
+            }
         }
-        catch (IOException ignored) {}
+        catch (NullPointerException ignored) {}
 
         finally {
             try {
