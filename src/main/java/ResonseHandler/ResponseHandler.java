@@ -98,6 +98,7 @@ public class ResponseHandler implements Runnable {
     }
 
     private Supplier<String[]> readInputHeaders = () -> {
+        //todo:stream
         try {
             var br = new BufferedReader(new InputStreamReader(is));
             var sum = new StringBuilder();

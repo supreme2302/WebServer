@@ -12,6 +12,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         List<String> parseConf = ParseConf.readConf();
         int defaultPort = 8080;
+        //todo: nonNull
         var port = ParseConf.getPort(Objects.requireNonNull(parseConf).get(0));
         port = port == null ? defaultPort : port;
 
