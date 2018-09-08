@@ -7,36 +7,25 @@ public class ThreadPool {
     private volatile boolean isRunning = true;
 
     public ThreadPool(int nThreads) {
-        for (int i = 0; i < nThreads; i++) {
-            new Thread(() -> {
-                while (isRunning) {
-                    Runnable nextTask = null;
-                    synchronized (taskQueue) {
-                        while (!taskQueue.hasItems()) {
-                            try {
-                                taskQueue.wait();
-                            } catch (InterruptedException err) {err.printStackTrace();}
-
+        for (int i = 0; i < nThreads; ++i) {
+            new Thread(
+                    () -> {
+                        while (isRunning) {
+                            taskQueue.hasItems();
+                            Runnable nextTask = taskQueue.dequeue();
+                            if (nextTask != null) {
+                                nextTask.run();
+                            }
                         }
-                        nextTask = taskQueue.dequeue();
-                    }
-                    if (nextTask != null) {
-                        nextTask.run();
-                    }
-
-                }
-            })
+                    })
                     .start();
         }
     }
 
     public void execute(Runnable command) {
-        synchronized (taskQueue) {
-            if (isRunning) {
+        if (isRunning) {
 //                System.out.println("execute,  " + Thread.currentThread().getName());
-                taskQueue.enqueue(command);
-                taskQueue.notify();
-            }
+            taskQueue.enqueue(command);
         }
     }
 }
