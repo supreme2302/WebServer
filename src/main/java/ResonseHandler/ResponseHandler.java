@@ -97,8 +97,7 @@ public class ResponseHandler implements Runnable {
         } catch (IOException ignored) {}
     }
 
-    private Supplier<String[]> readInputHeaders = () -> {
-        //todo:stream
+    private Supplier<String[]> readInputData = () -> {
         try {
             var br = new BufferedReader(new InputStreamReader(is));
             var sum = new StringBuilder();
@@ -166,7 +165,7 @@ public class ResponseHandler implements Runnable {
     @Override
     public void run() {
         try {
-            String[] a = readInputHeaders.get();
+            String[] a = readInputData.get();
             if (a != null) {
                 makeResponse.accept(a);
             } else {
