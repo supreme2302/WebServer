@@ -38,7 +38,7 @@ public class Main {
             document_root = null;
         }
 
-
+        System.out.println("Main: " + Thread.currentThread().getName());
         try (var serverSocket = new ServerSocket(port)) {
             var threadPool = new ThreadPool(amountOfThreads);
             while (true) {
