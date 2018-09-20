@@ -1,12 +1,12 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 MAINTAINER Chuvashov Egor
 
 RUN apt-get -y update
 
-#RUN apt install -y openjdk-11-jre-headless
+RUN apt install -y openjdk-11-jre-headless
 
-RUN apt-get install -y openjdk-11-jdk-headless
+RUN apt install -y openjdk-11-jdk
 
 RUN apt-get install -y maven
 
