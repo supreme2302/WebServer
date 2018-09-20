@@ -11,10 +11,13 @@ RUN apt install -y openjdk-11-jdk
 RUN apt-get install -y maven
 
 
-ADD . .
-COPY ./httptest/ /var/www/html/
-COPY ./httpd.conf /
+ENV WORK /opt
+ADD . $WORK/java/
+RUN mkdir -p /var/www/html
 
-EXPOSE 80
+WORKDIR $WORK/java
+RUN mvn package
 
-CMD java -jar target/WebServer-1.0-SNAPSHOT.jar
+EXPOSE 8080
+CMD java -jar $WORK/java/target/WebServer-1.0-SNAPSHOT.jar
+
