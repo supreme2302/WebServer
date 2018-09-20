@@ -108,7 +108,7 @@ public class ResponseHandler implements Runnable {
                 }
                 sum.append(s);
             }
-            System.out.println(sum.toString());
+//            System.out.println(sum.toString());
             return sum.toString().split(" ");
         } catch (IOException ignore) {}
         return null;

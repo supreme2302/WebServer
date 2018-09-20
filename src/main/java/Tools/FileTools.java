@@ -18,7 +18,7 @@ public class FileTools {
     public static File getFile(String path) {
 //        System.out.println("getFile");
         File file = new File(path);
-        System.out.println(path);
+//        System.out.println(path);
         return file.exists() ? file : null;
     }
 

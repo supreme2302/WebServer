@@ -11,12 +11,9 @@ RUN apt install -y openjdk-11-jdk
 RUN apt-get install -y maven
 
 
-ENV WORK /opt
-ADD . $WORK/java/
-RUN mkdir -p /var/www/html
-
-WORKDIR $WORK/java
-RUN mvn package
+ADD . .
+COPY ./httptest/ /var/www/html/
+COPY ./httpd.conf /
 
 EXPOSE 80
 

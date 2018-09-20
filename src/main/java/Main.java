@@ -6,10 +6,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class Main {
+
     public static void main(String[] args) throws IOException {
+
         List<String> parseConf = ParseConf.readConf();
         Integer defaultPort = 8080;
         Integer port;
@@ -21,7 +25,7 @@ public class Main {
         }
 
 
-        Integer defaultAmountOfThreads = 16;
+        Integer defaultAmountOfThreads = 5;
         Integer amountOfThreads;
         try {
             amountOfThreads = ParseConf.getAmountOfThreads(parseConf.get(1));
@@ -39,8 +43,10 @@ public class Main {
         }
 
         System.out.println("Main: " + Thread.currentThread().getName());
+        System.out.println(amountOfThreads);
         try (var serverSocket = new ServerSocket(port)) {
             var threadPool = new ThreadPool(amountOfThreads);
+//            ExecutorService threadPool = Executors.newFixedThreadPool(1);
             while (true) {
                 var incoming = serverSocket.accept();
                 var r = new ResponseHandler(incoming, document_root);
