@@ -4,7 +4,7 @@ MAINTAINER Chuvashov Egor
 
 RUN apt-get -y update
 
-RUN apt install -y openjdk-11-jre-headless
+RUN apt-get install -y openjdk-11-jre-headless
 
 RUN apt install -y openjdk-11-jdk
 
