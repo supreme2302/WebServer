@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         List<String> parseConf = ParseConf.readConf();
-        Integer defaultPort = 8080;
+        Integer defaultPort = 80;
         Integer port;
         try {
             port = ParseConf.getPort(parseConf.get(0));
