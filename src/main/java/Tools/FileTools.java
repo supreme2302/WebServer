@@ -24,8 +24,8 @@ public class FileTools {
 
     public static void sendFile(File file, BufferedOutputStream bos) throws IOException {
 //        System.out.println("sendFile");
-        try(final var fileInputStream = new FileInputStream(file)) {
-            final var size = fileInputStream.available();
+        try(FileInputStream fileInputStream = new FileInputStream(file)) {
+            final int size = fileInputStream.available();
             final byte[] buffer = new byte[size];
             bos.write(
                     buffer,

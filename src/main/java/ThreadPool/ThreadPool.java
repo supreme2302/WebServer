@@ -13,7 +13,6 @@ public class ThreadPool {
                         while (isRunning) {
                             taskQueue.hasItems();
                             Runnable nextTask = taskQueue.dequeue();
-//                            System.out.println("de: " + System.nanoTime());
                             if (nextTask != null) {
                                 nextTask.run();
                             }
@@ -25,9 +24,7 @@ public class ThreadPool {
 
     public void execute(Runnable command) {
         if (isRunning) {
-//                System.out.println("execute,  " + Thread.currentThread().getName());
             taskQueue.enqueue(command);
-//            System.out.println("en: " + System.nanoTime());
         }
     }
 }

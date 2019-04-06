@@ -12,7 +12,7 @@ public class ParseConf {
     public static List<String> readConf() throws IOException {
         File file = FileTools.getFile(path);
         if (file != null) {
-            try (var bufReader = new BufferedReader(new FileReader(file))) {
+            try (BufferedReader bufReader = new BufferedReader(new FileReader(file))) {
                 Stream<String> stringStream = Arrays.stream(new String[3]);
                 return stringStream.map(line -> {
                     try {

@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -42,7 +43,7 @@ public class ResponseHandler implements Runnable {
     }
 
     private String content_type(String ext) {
-        var types = new HashMap<String, String>();
+        HashMap<String, String> types = new HashMap<String, String>();
         types.put("txt", "text/txt");
         types.put("html", "text/html");
         types.put("css", "text/css");
@@ -56,8 +57,8 @@ public class ResponseHandler implements Runnable {
     }
 
     private Consumer<File> getResponse = file -> {
-        var ext = getFileExtension(file);
-        var content_type  = content_type(ext);
+        String ext = getFileExtension(file);
+        String content_type  = content_type(ext);
         try {
             os.write(Responses.writeResponse(file, content_type).getBytes());
             os.flush();
@@ -66,8 +67,8 @@ public class ResponseHandler implements Runnable {
     };
 
     private Consumer<File> headResponse = file -> {
-        var ext = getFileExtension(file);
-        var content_type  = content_type(ext);
+        String ext = getFileExtension(file);
+        String content_type  = content_type(ext);
         try {
             os.write(Responses.writeResponse(file, content_type).getBytes());
             os.flush();
@@ -76,7 +77,6 @@ public class ResponseHandler implements Runnable {
 
 
     private void rejectResponseForbidden() {
-//        System.out.println("rejectResponseForbidden");
         try {
             os.write(Responses.writeRejectResponse("403 Forbidden").getBytes());
         } catch (IOException ignored) {}
@@ -99,8 +99,8 @@ public class ResponseHandler implements Runnable {
 
     private Supplier<String[]> readInputData = () -> {
         try {
-            var br = new BufferedReader(new InputStreamReader(is));
-            var sum = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            StringBuilder sum = new StringBuilder();
             while(true) {
                 String s = br.readLine();
                 if(s == null || s.trim().length() == 0) {
@@ -108,7 +108,6 @@ public class ResponseHandler implements Runnable {
                 }
                 sum.append(s);
             }
-//            System.out.println(sum.toString());
             return sum.toString().split(" ");
         } catch (IOException ignore) {}
         return null;
@@ -132,19 +131,25 @@ public class ResponseHandler implements Runnable {
             rejectResponseForbidden();
             return;
         }
-        var path = URLDecoder.decode(rowPath, StandardCharsets.UTF_8).split("\\?")[0];
+        String path = "";
+        try {
+            path = URLDecoder.decode(rowPath, "utf-8").split("\\?")[0];
+        } catch (Exception e) {
+            //ignored
+        }
 
-        var indexOfSlash = path.lastIndexOf('/');
+
+        int indexOfSlash = path.lastIndexOf('/');
         if (indexOfSlash == path.length() - 1) {
-            var pathWithoutSlash = path.substring(0, indexOfSlash);
-            var tempExt = getFileExtension(pathWithoutSlash);
+            String pathWithoutSlash = path.substring(0, indexOfSlash);
+            String tempExt = getFileExtension(pathWithoutSlash);
             if (tempExt != null) {
                 rejectResponseNotFound();
                 return;
             }
         }
-        var fullPath = fullPath(path);
-        var file = getFile(fullPath);
+        String fullPath = fullPath(path);
+        File file = getFile(fullPath);
         if (file != null) {
             if (method.equals("HEAD")) {
                 headResponse.accept(file);

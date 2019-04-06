@@ -4,6 +4,7 @@ import Tools.ParseConf;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -44,12 +45,11 @@ public class Main {
 
         System.out.println("Main: " + Thread.currentThread().getName());
         System.out.println(amountOfThreads);
-        try (var serverSocket = new ServerSocket(port)) {
-            var threadPool = new ThreadPool(amountOfThreads);
-//            ExecutorService threadPool = Executors.newFixedThreadPool(1);
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            ThreadPool threadPool = new ThreadPool(amountOfThreads);
             while (true) {
-                var incoming = serverSocket.accept();
-                var r = new ResponseHandler(incoming, document_root);
+                Socket incoming = serverSocket.accept();
+                ResponseHandler r = new ResponseHandler(incoming, document_root);
                 threadPool.execute(r);
             }
         }
